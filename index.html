@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy Birthday Shimla ❤️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#e6b7c7" />
+  <style>
+    :root{
+      --bg1:#3a1c2f; /* deep rose */
+      --bg2:#5b2c3c; /* darker rose */
+      --bg3:#7a3d4a; /* royal touch */
+      --accent:#ffb7c5; /* rose gold */
+      --accent2:#ffd6e0; /* blush */
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:'Poppins',system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+      color:#fff;
+      overflow:hidden;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+    }
+
+    canvas#hearts{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; filter: drop-shadow(0 0 8px #ffc0cbcc);}
+
+    .wrap{position:relative; z-index:1; display:grid; place-items:center; height:100%; padding:24px;}
+
+    .card{
+      width:min(720px, 92vw);
+      backdrop-filter: blur(14px) saturate(140%);
+      background: linear-gradient(180deg, #ffffff1a, #ffffff0a);
+      border:1px solid #ffffff2a;
+      border-radius:28px;
+      box-shadow: 0 10px 30px #00000055, inset 0 0 40px #ffffff10;
+      overflow:hidden;
+    }
+
+    .hero{position:relative; padding:42px 28px 20px; text-align:center;}
+    .badge{display:inline-block; font-size:12px; letter-spacing:.18em; text-transform:uppercase; background:#ffffff22; border:1px solid #ffffff40; padding:6px 12px; border-radius:999px; margin-bottom:16px;}
+    h1{margin:0 0 8px; font-family:'Great Vibes', cursive; font-weight:400; font-size: clamp(38px, 6vw, 72px); line-height:1.05; color:var(--accent); text-shadow: 0 4px 20px #00000080;}
+    .sub{margin:0; opacity:.9; font-weight:300; font-size:clamp(14px, 2.4vw, 18px);}
+
+    .inner{padding:18px 26px 28px; max-height:48vh; overflow:auto; scrollbar-width:thin;}
+    .row{display:flex; flex-wrap:wrap; gap:18px; align-items:stretch;}
+    .col{flex:1 1 260px;}
+
+    .photo{aspect-ratio:1/1; width:100%; border-radius:22px; border:1px solid #ffffff35; overflow:hidden; background:linear-gradient(135deg,#ffffff22,#ffffff05); display:grid; place-items:center; font-size:14px; color:#ffffffcc;}
+    .photo img{width:100%; height:100%; object-fit:cover; display:block;}
+
+    .msg{height:100%; padding:18px; border-radius:22px; border:1px solid #ffffff35; background:linear-gradient(135deg,#ffffff22,#ffffff05);}
+    .msg p{margin:0 0 12px; line-height:1.8}
+    .msg .quote{font-style:italic; opacity:.95; color:var(--accent)}
+
+    footer{text-align:center; font-size:12px; opacity:.75; padding:10px 16px 18px;}
+  </style>
+</head>
+<body>
+  <canvas id="hearts"></canvas>
+  <div class="wrap">
+    <div class="card">
+      <div class="hero">
+        <div class="badge">Made with love</div>
+        <h1>Happy Birthday, Jannatul Maria Shimla ❤️</h1>
+        <p class="sub">Wishing you a day as magical and beautiful as you are.</p>
+      </div>
+
+      <div class="inner">
+        <div class="row">
+          <div class="col">
+            <div class="photo" id="photoHolder">
+              <span>Upload a favorite photo 💗</span>
+              <input id="photoInput" type="file" accept="image/*" style="margin-top:10px"/>
+            </div>
+          </div>
+          <div class="col">
+            <div class="msg">
+              <p class="quote">On this day, the stars whispered, and the world was blessed with you.</p>
+              <p id="wishText">
+                Tomar jonno sarajibon thakbe onk duwa valobasha,tmr jiboner lokhe tumi chole jaw aitai chawa 💖
+              </p>
+              <textarea id="customWish" placeholder="Write your personal wish here..." style="width:100%;height:80px;border-radius:12px;border:1px solid #ffffff40;background:#ffffff10;color:#fff;padding:10px;margin-top:10px;resize:none"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>Your day is already sparkling ✨🌹</footer>
+    </div>
+  </div>
+
+  <audio id="song" preload="auto">
+    <source src="" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Upload photo
+    const photoInput = document.getElementById('photoInput');
+    const photoHolder = document.getElementById('photoHolder');
+    photoInput.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if(!file) return;
+      const img = new Image();
+      img.onload = () => {
+        photoHolder.innerHTML = '';
+        photoHolder.appendChild(img);
+      };
+      img.src = URL.createObjectURL(file);
+      img.alt = 'Birthday Photo';
+    });
+
+    // Hearts animation
+    const cvs = document.getElementById('hearts');
+    const ctx = cvs.getContext('2d');
+    let hearts = [];
+    function resize(){ cvs.width = innerWidth; cvs.height = innerHeight; }
+    addEventListener('resize', resize); resize();
+
+    function heartShape(x,y,size){
+      ctx.beginPath();
+      const s = size;
+      for(let t=0; t<=Math.PI*2; t+=0.1){
+        const hx = 16*Math.pow(Math.sin(t),3);
+        const hy = 13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+        const px = x + (hx*s)/20;
+        const py = y - (hy*s)/20;
+        if(t===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+      }
+      ctx.closePath();
+    }
+
+    function spawn(n=12){
+      for(let i=0;i<n;i++){
+        hearts.push({
+          x: Math.random()*cvs.width,
+          y: cvs.height + Math.random()*100,
+          s: 8 + Math.random()*18,
+          a: 0.5 + Math.random()*0.5,
+          vx: -0.6 + Math.random()*1.2,
+          vy: -1.2 - Math.random()*1.2,
+          rot: Math.random()*Math.PI,
+          spin: -0.02 + Math.random()*0.04
+        });
+      }
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,cvs.width,cvs.height);
+      for(const h of hearts){
+        ctx.save();
+        ctx.globalAlpha = h.a;
+        ctx.translate(h.x,h.y);
+        ctx.rotate(h.rot);
+        const grad = ctx.createRadialGradient(0,0,1, 0,0,h.s);
+        grad.addColorStop(0,'#ffffff');
+        grad.addColorStop(0.2,'#ffd6e0');
+        grad.addColorStop(1,'#ffb7c5');
+        ctx.fillStyle = grad;
+        heartShape(0,0,h.s);
+        ctx.fill();
+        ctx.restore();
+        h.x += h.vx; h.y += h.vy; h.rot += h.spin; h.a -= 0.0025;
+      }
+      hearts = hearts.filter(h => h.y > -60 && h.a > 0);
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    // Auto sprinkle hearts + sparkle on page load
+    setTimeout(()=>spawn(40), 600);
+    setInterval(()=>spawn(20), 4000);
+  </script>
+</body>
+</html>
